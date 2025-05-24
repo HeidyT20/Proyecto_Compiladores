@@ -1,0 +1,3 @@
+FUNCTION sumar(a, b)
+    RETURN a + b;
+END

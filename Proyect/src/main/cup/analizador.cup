@@ -1,0 +1,73 @@
+package com.mycompany.proyect;
+
+import java_cup.runtime.*;
+
+parser code {:
+    public void report_error(String message, Object info) {
+        System.err.println("Error sintáctico: " + message);
+    }
+:}
+
+action code {:
+    public void syntax_error(Symbol s) {
+        System.err.println("Error de sintaxis en línea " + (s.left+1) + ", columna " + (s.right+1) + ": Token inesperado '" + s.value + "'");
+    }
+:}
+
+// Terminales (tokens)
+terminal DEFINE, PRINT, IF, ELSE, ELSEIF, WHILE, LOOP, FUNCTION, RETURN, END;
+terminal TRUE, FALSE;
+terminal SUMA, RESTA, MULTIPLICACION, DIVISION;
+terminal MENORQUE, MAYORQUE, MENOR, MAYOR, IGUALQUE, DIFERENTEQUE;
+terminal AND, OR, NOT;
+terminal PAREN_IZQUIERDO, PAREN_DERECHO, LLAVE_IZQUIERDO, LLAVE_DERECHO;
+terminal COMA, PUNTOCOMA;
+terminal ID;
+terminal Integer ENTERO;
+terminal Double DECIMAL;
+terminal String CADENA;
+
+// No terminales
+non terminal programa, sentencia, bloque, expr, declaraciones, parametros;
+
+// Simbolo de inicio
+start with programa;
+
+// Producciones
+programa ::= declaraciones 
+           | declaraciones programa;
+
+declaraciones ::= DEFINE ID PUNTOCOMA
+                | PRINT expr PUNTOCOMA
+                | IF expr bloque
+                | WHILE expr bloque
+                | FUNCTION ID PAREN_IZQUIERDO parametros PAREN_DERECHO bloque
+                | RETURN expr PUNTOCOMA
+                | expr PUNTOCOMA;
+
+parametros ::= /* vacío */
+             | ID
+             | ID COMA parametros;
+
+bloque ::= LLAVE_IZQUIERDO programa LLAVE_DERECHO;
+
+expr ::= expr SUMA expr
+      | expr RESTA expr
+      | expr MULTIPLICACION expr
+      | expr DIVISION expr
+      | expr MENOR expr
+      | expr MAYOR expr
+      | expr MENORQUE expr
+      | expr MAYORQUE expr
+      | expr IGUALQUE expr
+      | expr DIFERENTEQUE expr
+      | expr AND expr
+      | expr OR expr
+      | NOT expr
+      | PAREN_IZQUIERDO expr PAREN_DERECHO
+      | ID
+      | ENTERO
+      | DECIMAL
+      | CADENA
+      | TRUE
+      | FALSE;
